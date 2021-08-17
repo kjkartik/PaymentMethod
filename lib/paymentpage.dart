@@ -1,3 +1,7 @@
+import 'dart:core';
+import 'package:braintree_payment/braintree_payment.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 
@@ -12,7 +16,16 @@ class _PaymentMethodState extends State<PaymentMethod> {
   var paymentController = TextEditingController();
 
   @override
-  static final String tokenizationKey = 'sandbox_8hxpnkht_kzdtzv2btm4p7s5j';
+  // static final String url = 'sandbox_8hxpnkht_kzdtzv2btm4p7s5';
+
+  // 'https://yourcarlocator.ouctus-platform.com/Api/AppService/payment';
+
+  // get http => http;
+
+   fetchAlbum() {
+    return http.get(Uri.parse('yourcarlocator.ouctus-platform.com/Api/AppService/payment'));
+  }
+  String clientNonce = " GET YOUR CLIENT NONCE FROM YOUR SERVER";
 
   void showNonce(BraintreePaymentMethodNonce nonce) {
     showDialog(
@@ -63,32 +76,52 @@ class _PaymentMethodState extends State<PaymentMethod> {
           ),
           TextButton(
             onPressed: () async {
-              var request = BraintreeDropInRequest(
-                tokenizationKey: tokenizationKey,
-                collectDeviceData: true,
-                googlePaymentRequest: BraintreeGooglePaymentRequest(
-                  totalPrice: '4',
-                  currencyCode: '1',
-                  billingAddressRequired: false,
-                ),
-                paypalRequest: BraintreePayPalRequest(
-                  amount: '4.20',
-                  displayName: 'company',
-                ),
-                applePayRequest: BraintreeApplePayRequest(
-                  amount: 12,
-                  appleMerchantID: "2",
-                  countryCode: "4",
-                  currencyCode: "6",
-                  displayName: 'company2',
-                ),
-                cardEnabled: true,
-              );
-              final result = await BraintreeDropIn.start(request);
-              if (result != null) {
-                showNonce(result.paymentMethodNonce);
+              try {
+                var request = BraintreeDropInRequest(
+                  tokenizationKey:
+                      'https://yourcarlocator.ouctus-platform.com/Api/AppService',
+
+                  collectDeviceData: true,
+                  googlePaymentRequest: BraintreeGooglePaymentRequest(
+                    totalPrice: '4',
+                    currencyCode: '1',
+                    billingAddressRequired: false,
+                  ),
+                  paypalRequest: BraintreePayPalRequest(
+                      amount: '20',
+                      orderid: "190",
+                      userid: '3',
+                      deviceData:
+                          "correlation_id\":\"5fff9719179e4f06979c41fcff38c576",
+                      nonce: "tokencc_bh_rfx992_qp849n_8wss5t_t6r9w8_pry"),
+                  // applePayRequest: BraintreeApplePayRequest(
+                  //   amount: 12,
+                  //   appleMerchantID: "2",
+                  //   countryCode: "4",
+                  //   currencyCode: "6",
+                  //   displayName: 'company2',
+                  // ),
+                  cardEnabled: true,
+                );
+                final result = await BraintreeDropIn.start(request);
+                if (result != null) {
+                  showNonce(result.paymentMethodNonce);
+                  // final  response = await
+                  // http.post(Uri.tryParse(
+                  //     '$url?payment_method_nonce =${result.paymentMethodNonce
+                  //         .nonce}&device_data=${result.deviceData}'));
+                  //
+                  // final payResult = jsonDecode(response.body);
+                  // if(payResult['result']=='Success')print('payment Done');
+                  //
+                  // }
+
+                }
+              } catch (e) {
+                print(e);
+                print('errror');
               }
-              // var request = BraintreeDropInRequest(googlePaymentRequest: )
+              ;
             },
             child: Text(
               'Pay Now',
