@@ -1,7 +1,6 @@
 import 'dart:core';
-import 'package:braintree_payment/braintree_payment.dart';
 import 'package:http/http.dart' as http;
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 
@@ -16,16 +15,12 @@ class _PaymentMethodState extends State<PaymentMethod> {
   var paymentController = TextEditingController();
 
   @override
-  // static final String url = 'sandbox_8hxpnkht_kzdtzv2btm4p7s5';
 
-  // 'https://yourcarlocator.ouctus-platform.com/Api/AppService/payment';
-
-  // get http => http;
-
-   fetchAlbum() {
-    return http.get(Uri.parse('yourcarlocator.ouctus-platform.com/Api/AppService/payment'));
+    urls (){
+      Uri.parse('https://yourcarlocator.ouctus-platform.com/Api/AppService');
   }
-  String clientNonce = " GET YOUR CLIENT NONCE FROM YOUR SERVER";
+
+  fetchAlbum() async {}
 
   void showNonce(BraintreePaymentMethodNonce nonce) {
     showDialog(
@@ -78,8 +73,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
             onPressed: () async {
               try {
                 var request = BraintreeDropInRequest(
-                  tokenizationKey:
-                      'https://yourcarlocator.ouctus-platform.com/Api/AppService',
+                  tokenizationKey: urls(),
+                  // 'https://yourcarlocator.ouctus-platform.com/Api/AppService',
 
                   collectDeviceData: true,
                   googlePaymentRequest: BraintreeGooglePaymentRequest(
@@ -94,28 +89,29 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       deviceData:
                           "correlation_id\":\"5fff9719179e4f06979c41fcff38c576",
                       nonce: "tokencc_bh_rfx992_qp849n_8wss5t_t6r9w8_pry"),
-                  // applePayRequest: BraintreeApplePayRequest(
-                  //   amount: 12,
-                  //   appleMerchantID: "2",
-                  //   countryCode: "4",
-                  //   currencyCode: "6",
-                  //   displayName: 'company2',
-                  // ),
+                  applePayRequest: BraintreeApplePayRequest(
+                    amount: 12,
+                    appleMerchantID: "2",
+                    countryCode: "4",
+                    currencyCode: "6",
+                    displayName: 'company2',
+                  ),
                   cardEnabled: true,
                 );
                 final result = await BraintreeDropIn.start(request);
                 if (result != null) {
                   showNonce(result.paymentMethodNonce);
-                  // final  response = await
-                  // http.post(Uri.tryParse(
-                  //     '$url?payment_method_nonce =${result.paymentMethodNonce
-                  //         .nonce}&device_data=${result.deviceData}'));
-                  //
-                  // final payResult = jsonDecode(response.body);
-                  // if(payResult['result']=='Success')print('payment Done');
-                  //
-                  // }
+                  // urls(String url)async{
 
+                  // }
+                  // final http.Response response = await
+                  // http.post(
+                  //     Uri.tryParse(
+                  //    '$url?payment_method_nonce =${result.paymentMethodNonce.nonce}'
+                  //        '&device_data=${result.deviceData}'
+                  // ));
+                  // final payResult = jsonDecode(response.body);
+                  // if (payResult['result'] == 'Success') print('payment Done');
                 }
               } catch (e) {
                 print(e);
