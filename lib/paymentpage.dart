@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 
 class PaymentMethod extends StatefulWidget {
+
   const PaymentMethod({Key? key}) : super(key: key);
 
   @override
