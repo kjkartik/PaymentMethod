@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'dart:core';
 import 'package:http/http.dart' as http;
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 
@@ -15,30 +15,27 @@ class _PaymentMethodState extends State<PaymentMethod> {
   var paymentController = TextEditingController();
 
   @override
-
-    urls (){
-      Uri.parse('https://yourcarlocator.ouctus-platform.com/Api/AppService');
-  }
-
-  fetchAlbum() async {}
+  var loading;
+  final paymentUrl = "yourcarlocator.ouctus-platform.com/Api/AppService";
 
   void showNonce(BraintreePaymentMethodNonce nonce) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Payment method nonce:'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text('Nonce: ${nonce.nonce}'),
-            SizedBox(height: 16),
-            Text('Type label: ${nonce.typeLabel}'),
-            SizedBox(height: 16),
-            Text('Description: ${nonce.description}'),
-          ],
-        ),
-      ),
+      builder: (_) =>
+          AlertDialog(
+            title: Text('Payment method nonce:'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Text('Nonce: ${nonce.nonce}'),
+                SizedBox(height: 16),
+                Text('Type label: ${nonce.typeLabel}'),
+                SizedBox(height: 16),
+                Text('Description: ${nonce.description}'),
+              ],
+            ),
+          ),
     );
   }
 
@@ -73,49 +70,56 @@ class _PaymentMethodState extends State<PaymentMethod> {
             onPressed: () async {
               try {
                 var request = BraintreeDropInRequest(
-                  tokenizationKey: urls(),
-                  // 'https://yourcarlocator.ouctus-platform.com/Api/AppService',
-
+                  tokenizationKey: 'sandbox_tvgvxb38_wz53xwgqk5sb42gm',
                   collectDeviceData: true,
                   googlePaymentRequest: BraintreeGooglePaymentRequest(
-                    totalPrice: '4',
-                    currencyCode: '1',
+                    totalPrice: '4.20',
+                    currencyCode: 'USD',
                     billingAddressRequired: false,
                   ),
-                  paypalRequest: BraintreePayPalRequest(
-                      amount: '20',
-                      orderid: "190",
-                      userid: '3',
-                      deviceData:
-                          "correlation_id\":\"5fff9719179e4f06979c41fcff38c576",
-                      nonce: "tokencc_bh_rfx992_qp849n_8wss5t_t6r9w8_pry"),
-                  applePayRequest: BraintreeApplePayRequest(
-                    amount: 12,
-                    appleMerchantID: "2",
-                    countryCode: "4",
-                    currencyCode: "6",
-                    displayName: 'company2',
+                    paypalRequest: BraintreePayPalRequest(
+                    amount: '4.20',
+                    displayName: 'Example company',
                   ),
                   cardEnabled: true,
                 );
-                final result = await BraintreeDropIn.start(request);
-                if (result != null) {
-                  showNonce(result.paymentMethodNonce);
-                  // urls(String url)async{
 
-                  // }
-                  // final http.Response response = await
-                  // http.post(
-                  //     Uri.tryParse(
-                  //    '$url?payment_method_nonce =${result.paymentMethodNonce.nonce}'
-                  //        '&device_data=${result.deviceData}'
-                  // ));
-                  // final payResult = jsonDecode(response.body);
-                  // if (payResult['result'] == 'Success') print('payment Done');
+                BraintreeDropInResult? result =
+                await BraintreeDropIn.start(request);
+                if (result != null) {
+                  print("description" + result.paymentMethodNonce.description);
+                  print("nonce" + result.paymentMethodNonce.nonce);
+                  var body = ({
+                    "orderId": '200',
+                    "userId": 'userid',
+                    "nonce": result.paymentMethodNonce.nonce,
+                    "deviceData": result.deviceData
+                  });
+                  http.Response response =
+                  await http.post(Uri.parse(paymentUrl), body: body);
+                  final payresult = jsonDecode(response.body);
+
+                  print(payresult);
+                  if (payresult["success"] == true) {
+                    setState(() {
+                      loading = true;
+                    });
+                    print(payresult["message"]);
+                    print(payresult["data"]);
+                    print("payment done");
+                  } else {
+                    setState(() {
+                      // loading=true;
+                    });
+                    print("fail");
+                    print(payresult["message"]);
+                    print(payresult["data"]);
+                    // Navigator.push(context, MaterialPageRoute(builder: (context)=>PayPopUp1()));
+                  }
                 }
               } catch (e) {
                 print(e);
-                print('errror');
+                print('error');
               }
               ;
             },
