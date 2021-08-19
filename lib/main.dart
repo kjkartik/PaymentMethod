@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paymentmethod/paymentpage.dart';
 
-
 void main() {
   runApp(MyApp());
 }
