@@ -97,7 +97,6 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   var body = ({
                     "ordeid": '190',
                     "userid" : '3',
-
                     "nonce": "tokencc_bh_rfx992_qp849n_8wss5t_t6r9w8_pry",
                     "deviceData": "correlation_id\":\"5fff9719179e4f06979c41fcff38c576\"}",
                   });
